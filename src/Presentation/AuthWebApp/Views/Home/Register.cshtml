@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Register</h2>
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+        <form asp-action="Register" method="post">
+            <div class="form-group">
+                <label for="Username">Username</label>
+                <input name="Username" id="Username" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input name="Email" type="email" id="Email" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <input name="Password" type="password" id="Password" class="form-control" required minlength="6" />
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        <p><a asp-action="Login">Login</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Client-side validation
+        $('form').on('submit', function(e) {
+            var username = $('#Username').val();
+            var email = $('#Email').val();
+            var password = $('#Password').val();
+            if (!username || !email || !password || password.length < 6) {
+                e.preventDefault();
+                alert('Please fill all fields correctly');
+            }
+        });
+    </script>
+}
