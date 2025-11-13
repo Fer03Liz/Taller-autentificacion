@@ -2,6 +2,9 @@ using AuthWebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure to listen on port 80
+builder.WebHost.UseUrls("http://+:80");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();

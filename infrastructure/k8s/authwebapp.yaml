@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authwebapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authwebapp
+  template:
+    metadata:
+      labels:
+        app: authwebapp
+    spec:
+      containers:
+      - name: authwebapp
+        image: taller-autentificacion-authwebapp:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ApiBaseUrl
+          valueFrom:
+            configMapKeyRef:
+              name: auth-app-config
+              key: ApiBaseUrl
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authwebapp
+spec:
+  type: LoadBalancer
+  selector:
+    app: authwebapp
+  ports:
+  - port: 80
+    targetPort: 80

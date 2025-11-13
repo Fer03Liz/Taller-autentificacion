@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authservice
+  template:
+    metadata:
+      labels:
+        app: authservice
+    spec:
+      containers:
+      - name: authservice
+        image: taller-autentificacion-authservice:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=postgres;Database=authdb;Username=postgres;Password=$(POSTGRES_PASSWORD)"
+        - name: Jwt__Issuer
+          valueFrom:
+            configMapKeyRef:
+              name: auth-app-config
+              key: Jwt__Issuer
+        - name: Jwt__Audience
+          valueFrom:
+            configMapKeyRef:
+              name: auth-app-config
+              key: Jwt__Audience
+        - name: Jwt__SecretKey
+          valueFrom:
+            secretKeyRef:
+              name: auth-app-secret
+              key: Jwt__SecretKey
+        - name: Jwt__ExpiryInMinutes
+          valueFrom:
+            configMapKeyRef:
+              name: auth-app-config
+              key: Jwt__ExpiryInMinutes
+        envFrom:
+        - secretRef:
+            name: auth-app-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authservice
+spec:
+  selector:
+    app: authservice
+  ports:
+  - port: 80
+    targetPort: 80
