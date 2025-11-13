@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  authservice:
+    build:
+      context: ./src/Microservice/AuthService
+    environment:
+      ConnectionStrings__DefaultConnection: Host=postgres;Database=authdb;Username=postgres;Password=password
+      Jwt__Issuer: AuthService
+      Jwt__Audience: AuthService
+      Jwt__SecretKey: YourSuperSecretKeyHere12345678901234567890
+      Jwt__ExpiryInMinutes: 60
+    ports:
+      - "5000:80"
+    depends_on:
+      - postgres
+
+  authwebapp:
+    build:
+      context: ./src/Presentation/AuthWebApp
+    environment:
+      ApiBaseUrl: http://authservice
+    ports:
+      - "5001:80"
+    depends_on:
+      - authservice
+
+volumes:
+  postgres_data:
